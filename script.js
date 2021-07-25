@@ -1,5 +1,8 @@
 let deck;
 let card;
+const playerHandcards = [];
+const cardButtonArray = [];
+const storeCardsforFirstround = [];
 
 const header = document.createElement('div');
 header.classList.add('cardshow');
@@ -18,35 +21,17 @@ const starter = document.querySelector('.starter');
 starter.appendChild(vinText);
 // player score, start with 100 point
 let player5Cards;
-const playerHand = [];
 const playerScore = 100;
 let dealButton;
 card = document.createElement('button');
-const createCard = (cardInfo) => {
-  const suit = document.createElement('div');
-  suit.classList.add('suit');
-  suit.innerText = cardInfo.suitSymbol;
 
-  const name = document.createElement('div');
-  name.classList.add(cardInfo.colour);
-  name.innerText = cardInfo.displayName;
-
-  card = document.createElement('button');
-  card.classList.add('card');
-  card.setAttribute('id', 'toBeRemove');
-  card.appendChild(name);
-  card.appendChild(suit);
-  playercards.appendChild(card);
-
-  return playercards;
-};
 const cardNameTally = {};
 const cardSuitTally = {};
 
-const tallyCards = (playerHand) => {
+const tallyCards = () => {
   let size = 0;
-  for (let i = 0; i < playerHand.length; i += 1) {
-    const cardName = playerHand[i].displayName;
+  for (let i = 0; i < playerHandcards.length; i += 1) {
+    const cardName = playerHandcards[i].displayName;
     if (cardName in cardNameTally) {
       cardNameTally[cardName] += 1;
     }
@@ -59,8 +44,8 @@ const tallyCards = (playerHand) => {
     console.log('pair');
   }
 
-  for (let i = 0; i < playerHand.length; i += 1) {
-    const cardSuit = playerHand[i].suit;
+  for (let i = 0; i < playerHandcards.length; i += 1) {
+    const cardSuit = playerHandcards[i].suit;
     if (cardSuit in cardSuitTally) {
       cardSuitTally[cardSuit] += 1;
     }
@@ -156,32 +141,106 @@ const makeDeck = () => {
   return newDeck;
 };
 
-let counter = 0;
+const showHoldContainer = document.createElement('div');
+showHoldContainer.classList.add('showholdcontainer');
+const showHold = document.createElement('div');
+showHold.classList.add('holdMsg');
 
+const holdButtonClick = (holdButtonElement, j) => {
+  // console.log('hold button number', j);
+
+  console.log(holdButtonElement.innerText);
+
+  if (cardButtonArray[j] === 'unhold') {
+    cardButtonArray[j] = 'hold';
+    console.log('hold button array', cardButtonArray);
+    showHold.innerText = 'hold';
+    playerHandcards.push(storeCardsforFirstround[j]);
+  } else if (cardButtonArray[j] === 'hold') {
+    showHold.innerText = 'unhold';
+    cardButtonArray[j] = 'unhold';
+    playerHandcards.splice(j, 1);
+  }
+
+  showHoldContainer.appendChild(showHold);
+  holdButtonElement.appendChild(showHoldContainer);
+};
+let counter = 0;
 const DealingButtonClick = (buttonHold) => {
   // if dedck have less then 5 card , make more cards
+
   if (deck.length < 5) {
     console.log('test');
     deck = shuffleCards(makeDeck());
   }
+  if (counter !== 0) {
+    playercards.innerText = '';
+    for (let i = 0; i < playerHandcards.length; i += 1) {
+      const suit = document.createElement('div');
+      suit.classList.add('suit');
+      suit.innerText = playerHandcards[i].suitSymbol;
+
+      const name = document.createElement('div');
+      name.classList.add(player5Cards.colour);
+      name.innerText = playerHandcards[i].displayName;
+
+      card = document.createElement('button');
+      card.classList.add('card');
+      card.appendChild(name);
+      card.appendChild(suit);
+      playercards.appendChild(card);
+    }
+    for (let J = 0; J < 5; J += 1) {
+      if (cardButtonArray[J] === 'unhold') {
+        player5Cards = deck.pop();
+        playerHandcards.push(player5Cards);
+        const suit = document.createElement('div');
+        suit.classList.add('suit');
+        suit.innerText = player5Cards.suitSymbol;
+
+        const name = document.createElement('div');
+        name.classList.add(player5Cards.colour);
+        name.innerText = player5Cards.displayName;
+
+        card = document.createElement('button');
+        card.classList.add('card');
+        card.appendChild(name);
+        card.appendChild(suit);
+        playercards.appendChild(card);
+      }
+    }
+    tallyCards();
+  }
+
   // if its not first click , remove cards and remove playerhand array cards
-  if (counter >= 1) {
+  if (counter === 0) {
+    playercards.innerText = '';
     for (let i = 0; i < 5; i += 1) {
-      const elem = document.getElementById('toBeRemove');
-      elem.parentNode.removeChild(elem);
-      playerHand.pop();
+      player5Cards = deck.pop();
+      storeCardsforFirstround.push(player5Cards);
+      cardButtonArray[i] = 'unhold';
+      const suit = document.createElement('div');
+      suit.classList.add('suit');
+      suit.innerText = player5Cards.suitSymbol;
+
+      const name = document.createElement('div');
+      name.classList.add(player5Cards.colour);
+      name.innerText = player5Cards.displayName;
+
+      card = document.createElement('button');
+      card.classList.add('card');
+      card.appendChild(name);
+      card.appendChild(suit);
+      showHold.innerText = 'hold';
+      playercards.appendChild(card);
+      card.addEventListener('click', (event) => {
+        holdButtonClick(event.currentTarget, i);
+      });
     }
   }
-  // display 5 new cards and sore it in playerhand array
-  for (let i = 0; i < 5; i += 1) {
-    player5Cards = deck.pop();
-    createCard(player5Cards);
-    playerHand.push(player5Cards);
-  }
+
   counter += 1;
-  tallyCards(playerHand);
 };
-// not working
 
 dealButton = document.createElement('button');
 dealButton.classList.add('dealButton');
