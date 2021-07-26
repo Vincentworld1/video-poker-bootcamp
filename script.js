@@ -1,9 +1,12 @@
 let deck;
 let card;
-const playerHandcards = [];
-const cardButtonArray = [];
-const storeCardsforFirstround = [];
-
+let playerHandcards = [];
+let cardButtonArray = [];
+let storeCardsforFirstround = [];
+let outcomeMessage = '';
+let playerScore = 100;
+let playerBet = 0;
+let counter = 0;
 const header = document.createElement('div');
 header.classList.add('cardshow');
 header.innerText = 'header';
@@ -21,13 +24,124 @@ const starter = document.querySelector('.starter');
 starter.appendChild(vinText);
 // player score, start with 100 point
 let player5Cards;
-const playerScore = 100;
+let bettingButton;
 let dealButton;
 card = document.createElement('button');
 
-const cardNameTally = {};
-const cardSuitTally = {};
+let cardNameTally = {};
+let cardSuitTally = {};
+// winning rule
+// pair of jack =no decrease of credit
+const checkForPairofJack = () => {
+  if (cardNameTally.J === 2) {
+    outcomeMessage = 'Pair of jack';
+  }
+  return outcomeMessage;
+};
 
+// 2 pair of cards  x2 , same numbers ///////////////////////WORKING!
+const PairOfcards = () => {
+  const entries = Object.entries(cardNameTally);
+  console.log('test3');
+  console.log(entries);
+
+  for (let i = 0; i < entries.length; i += 1) {
+    console.log(entries[i][1]);
+    console.log(entries[i][1] == 2);
+    if (entries[i][1] == 2) {
+      console.log('test4');
+      outcomeMessage = '2 pair of card';
+      console.log(outcomeMessage);
+      playerBet *= 2;
+      console.log(playerBet * 2);
+      return outcomeMessage;
+    }
+  }
+};
+
+// 3 of a kind x3 , 3 of the same numbers
+const threeOfAKind = () => {
+  const entries = Object.entries(cardNameTally);
+  for (let i = 0; i < entries.length; i += 1) {
+    if (entries[i][1] === 3) {
+      outcomeMessage = '3 of a kind';
+      playerBet *= 3;
+    }
+    return outcomeMessage;
+  }
+};
+// straight x4 , 5 card in sequenital order
+const striaght = () => {
+  const cardKeys = Object.keys(cardNameTally);
+  // sort lowest to highest
+  const lowestToHighest = cardKeys.sort((a, b) => a - b);
+  for (let i = 0; i < lowestToHighest.length - 1; i += 1) {
+    if (Number(lowestToHighest[i]) + 1 === lowestToHighest[i + 1]) {
+      outcomeMessage = 'Striaght!';
+      playerBet *= 4;
+    }
+  }
+  return outcomeMessage;
+};
+// flush x5, 5 card in same suit
+const flush = () => {
+  const cardValue = Object.values(cardSuitTally);
+  if (cardValue[0] == 5) {
+    outcomeMessage = 'Flush!';
+    playerBet *= 5;
+  }
+  return outcomeMessage;
+};
+// full house x 9 , a pair and 3 of a kind
+const fullHouse = () => {
+  const cardValue = Object.values(cardNameTally);
+
+  if (cardValue[0] == 3 && cardValue[1] == 2
+      || cardValue[1] == 3 && cardValue[0] == 2
+  ) {
+    playerBet *= 9;
+    outcomeMessage = 'full house!';
+  }
+  return outcomeMessage;
+};
+// four of a kind x25 , exmaple all 4 aces
+const fourOfaKind = () => {
+  const cardValue = Object.values(cardNameTally);
+  // sort lowest to highest
+
+  for (let i = 0; i < cardValue.length; i += 1) {
+    if (Number(cardValue[i]) === 4) {
+      outcomeMessage = '4 of a kind!';
+      playerBet *= 25;
+    }
+  }
+  return outcomeMessage;
+};
+// stright flush  x50 , 5 card in sequenital order and the same suit
+const striaghtFlush = () => {
+  const cardKeys = Object.keys(cardNameTally);
+  const cardValue = Object.values(cardSuitTally);
+  // sort lowest to highest
+  const lowestToHighest = cardKeys.sort((a, b) => a - b);
+  for (let i = 0; i < lowestToHighest.length - 1; i += 1) {
+    if (Number(lowestToHighest[i]) + 1 == lowestToHighest[i + 1] && cardValue[0] == 5) {
+      outcomeMessage = 'striaghtFlush';
+      playerBet *= 50;
+    }
+  }
+  return outcomeMessage;
+};
+// Royal Flush x 800 ,a Ten, a Jack, a Queen, a King and an Ace of the same suit
+const royalFlush = () => {
+  const cardValue = Object.values(cardSuitTally);
+  const cardKeys = Object.keys(cardNameTally);
+  if (cardValue[0] == 5 && cardKeys.includes('10')
+   && cardKeys.includes('J') && cardKeys.includes('Q') && cardKeys.includes('K') && cardKeys.includes('A')) {
+    outcomeMessage = 'Royal Flush!!';
+    playerBet *= 800;
+  }
+  return outcomeMessage;
+};
 const tallyCards = () => {
   let size = 0;
   for (let i = 0; i < playerHandcards.length; i += 1) {
@@ -56,6 +170,37 @@ const tallyCards = () => {
     }
   }
 };
+const resetGame = () => {
+  playerHandcards = [];
+  cardButtonArray = [];
+  storeCardsforFirstround = [];
+  cardNameTally = {};
+  cardSuitTally = {};
+  playercards.innerText = '';
+  playerBet = 0;
+};
+
+const winningCondition = () => {
+  console.log('test2');
+  PairOfcards();
+  checkForPairofJack();
+  threeOfAKind();
+  striaght();
+  flush();
+  fullHouse();
+  fourOfaKind();
+  striaghtFlush();
+  royalFlush();
+  resetGame();
+
+  if (outcomeMessage == '') {
+    outcomeMessage = 'You Lost!';
+    playerScore -= playerBet;
+  } else {
+    playerScore += playerBet;
+  }
+};
+
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 const getRandomIndex = (max) => Math.floor(Math.random() * max);
 
@@ -93,7 +238,7 @@ const makeDeck = () => {
     // This is an example of a loop without an array.
     for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
       // By default, the card name is the same as rankCounter
-      let cardName = `${rankCounter}`;
+      cardName = `${rankCounter}`;
       let displayCardName = cardName;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
@@ -140,7 +285,10 @@ const makeDeck = () => {
   // Return the completed card deck
   return newDeck;
 };
-
+clickbettingbutton = () => {
+  playerBet += 1;
+  bettingButton.innerText = `betting: ${playerBet}`;
+};
 const showHoldContainer = document.createElement('div');
 showHoldContainer.classList.add('showholdcontainer');
 const showHold = document.createElement('div');
@@ -165,7 +313,7 @@ const holdButtonClick = (holdButtonElement, j) => {
   showHoldContainer.appendChild(showHold);
   holdButtonElement.appendChild(showHoldContainer);
 };
-let counter = 0;
+
 const DealingButtonClick = (buttonHold) => {
   // if dedck have less then 5 card , make more cards
 
@@ -173,7 +321,9 @@ const DealingButtonClick = (buttonHold) => {
     console.log('test');
     deck = shuffleCards(makeDeck());
   }
-  if (counter !== 0) {
+
+  if (counter === 1) {
+    counter = 0;
     playercards.innerText = '';
     for (let i = 0; i < playerHandcards.length; i += 1) {
       const suit = document.createElement('div');
@@ -210,10 +360,11 @@ const DealingButtonClick = (buttonHold) => {
       }
     }
     tallyCards();
+    console.log('test');
+    winningCondition();
   }
-
-  // if its not first click , remove cards and remove playerhand array cards
   if (counter === 0) {
+    counter += 1;
     playercards.innerText = '';
     for (let i = 0; i < 5; i += 1) {
       player5Cards = deck.pop();
@@ -238,10 +389,12 @@ const DealingButtonClick = (buttonHold) => {
       });
     }
   }
-
-  counter += 1;
 };
-
+bettingButton = document.createElement('button');
+bettingButton.classList.add('bettingButton');
+bettingButton.innerText = `betting: ${playerBet}`;
+document.body.appendChild(bettingButton);
+bettingButton.addEventListener('click', clickbettingbutton);
 dealButton = document.createElement('button');
 dealButton.classList.add('dealButton');
 dealButton.innerText = 'Deal';
