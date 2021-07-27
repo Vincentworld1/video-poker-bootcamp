@@ -413,7 +413,7 @@ const DealingButtonClick = (buttonHold) => {
   }
 };
 const clickingHelpButton = () => {
-  alert('Rule \n \n 1) You need to bet in order to deal the cards \n \n 2)maximum, 5 credit \n \n 3) After the first deal, you can click on the card to hold that card. \n \n 4) After decieding which cards to hold, click on the deal button  one more time to discard the cards that are not click \n \n 5)Result will show if you win or lose ');
+  alert('Rule \n \n 1) You need to bet in order to deal the cards \n \n 2)maximum, 5 credit \n \n 3) After the first deal, you can click on the card to hold it. \n \n 4) After decieding which cards to hold, click on the deal button  one more time to discard the cards that are not click \n \n 5)Result will show if you win or lose ');
 };
 // container to store deal , bet and message output container
 const buttonsContainer = document.createElement('div');
