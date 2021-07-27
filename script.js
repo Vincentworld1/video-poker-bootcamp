@@ -332,7 +332,7 @@ const holdButtonClick = (holdButtonElement, j) => {
   holdButtonElement.appendChild(showHoldContainer);
 };
 
-const DealingButtonClick = (buttonHold) => {
+const DealingButtonClick = () => {
   // if dedck have less then 5 card , make more cards
 
   if (deck.length < 5) {
@@ -419,7 +419,7 @@ const clickingHelpButton = () => {
 const buttonsContainer = document.createElement('div');
 buttonsContainer.classList.add('button-container');
 
-bettingButton = document.createElement('button');
+const bettingButton = document.createElement('button');
 bettingButton.classList.add('bettingButton');
 bettingButton.innerText = `Credit Bet: ${playerBet}`;
 buttonsContainer.appendChild(bettingButton);
