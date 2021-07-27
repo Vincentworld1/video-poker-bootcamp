@@ -81,3 +81,7 @@ body {
   font-family: Monospace;
   font-size: 16px;
 }
+.help-button {
+  position: absolute;
+  margin: 30px;
+}

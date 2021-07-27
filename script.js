@@ -1,3 +1,4 @@
+// Global
 let deck;
 let card;
 let playerHandcards = [];
@@ -6,13 +7,20 @@ let storeCardsforFirstround = [];
 let outcomeMessage = '';
 let playerScore = 100;
 let playerBet = 0;
+let tempCardShow;
+
+// keep track if it first deal or second
 let counter = 0;
+
+// header container and  title
 const header = document.createElement('div');
 header.classList.add('header');
+
 const headingWords = document.createElement('div');
 headingWords.classList.add('heading-words');
 headingWords.innerHTML = '🃏 Video Poker 🃏';
 header.appendChild(headingWords);
+
 document.body.appendChild(header);
 
 const playercards = document.createElement('div');
@@ -25,10 +33,6 @@ document.body.appendChild(playercards);
 // const starter = document.querySelector('.starter');
 // starter.appendChild(vinText);
 // player score, start with 100 point
-let player5Cards;
-let bettingButton;
-let dealButton;
-card = document.createElement('button');
 
 let cardNameTally = {};
 let cardSuitTally = {};
@@ -67,7 +71,7 @@ const PairOfcards = () => {
 const threeOfAKind = () => {
   const entries = Object.entries(cardNameTally);
   for (let i = 0; i < entries.length; i += 1) {
-    if (entries[i][1] === 3) {
+    if (entries[i][1] == 3) {
       outcomeMessage = '3 of a kind';
       playerBet *= 3;
     }
@@ -114,7 +118,7 @@ const fourOfaKind = () => {
   // sort lowest to highest
 
   for (let i = 0; i < cardValue.length; i += 1) {
-    if (Number(cardValue[i]) === 4) {
+    if (Number(cardValue[i]) == 4) {
       outcomeMessage = '4 of a kind!';
       playerBet *= 25;
     }
@@ -294,15 +298,17 @@ const makeDeck = () => {
   // Return the completed card deck
   return newDeck;
 };
+
 const clickbettingbutton = () => {
   dealButton.disabled = false;
   playerBet += 1;
-  if (playerBet === 5) {
+  if (playerBet === 5 || playerScore === 0) {
     bettingButton.disabled = true;
   }
   playercards.innerText = '';
   bettingButton.innerText = `Credit Bet: ${playerBet}`;
 };
+// show message 'hold' or 'discard' when click contrainer element
 const showHoldContainer = document.createElement('div');
 showHoldContainer.classList.add('showholdcontainer');
 const showHold = document.createElement('div');
@@ -340,16 +346,16 @@ const DealingButtonClick = (buttonHold) => {
     counter += 1;
     playercards.innerText = '';
     for (let i = 0; i < 5; i += 1) {
-      player5Cards = deck.pop();
-      storeCardsforFirstround.push(player5Cards);
+      tempCardShow = deck.pop();
+      storeCardsforFirstround.push(tempCardShow);
       cardButtonArray[i] = 'discard';
       const suit = document.createElement('div');
       suit.classList.add('suit');
-      suit.innerText = player5Cards.suitSymbol;
+      suit.innerText = tempCardShow.suitSymbol;
 
       const name = document.createElement('div');
-      name.classList.add(player5Cards.colour);
-      name.innerText = player5Cards.displayName;
+      name.classList.add(tempCardShow.colour);
+      name.innerText = tempCardShow.displayName;
 
       card = document.createElement('button');
       card.classList.add('card');
@@ -373,7 +379,7 @@ const DealingButtonClick = (buttonHold) => {
       suit.innerText = playerHandcards[i].suitSymbol;
 
       const name = document.createElement('div');
-      name.classList.add(player5Cards.colour);
+      name.classList.add(tempCardShow.colour);
       name.innerText = playerHandcards[i].displayName;
 
       card = document.createElement('button');
@@ -384,15 +390,15 @@ const DealingButtonClick = (buttonHold) => {
     }
     for (let J = 0; J < 5; J += 1) {
       if (cardButtonArray[J] === 'discard') {
-        player5Cards = deck.pop();
-        playerHandcards.push(player5Cards);
+        tempCardShow = deck.pop();
+        playerHandcards.push(tempCardShow);
         const suit = document.createElement('div');
         suit.classList.add('suit');
-        suit.innerText = player5Cards.suitSymbol;
+        suit.innerText = tempCardShow.suitSymbol;
 
         const name = document.createElement('div');
-        name.classList.add(player5Cards.colour);
-        name.innerText = player5Cards.displayName;
+        name.classList.add(tempCardShow.colour);
+        name.innerText = tempCardShow.displayName;
 
         card = document.createElement('button');
         card.classList.add('card');
@@ -406,27 +412,41 @@ const DealingButtonClick = (buttonHold) => {
     winningCondition();
   }
 };
-
+const clickingHelpButton = () => {
+  alert('Rule \n \n 1) You need to bet in order to deal the cards \n \n 2)maximum, 5 credit \n \n 3) After the first deal, you can click on the card to hold that card. \n \n 4) After decieding which cards to hold, click on the deal button  one more time to discard the cards that are not click \n \n 5)Result will show if you win or lose ');
+};
+// container to store deal , bet and message output container
 const buttonsContainer = document.createElement('div');
 buttonsContainer.classList.add('button-container');
+
 bettingButton = document.createElement('button');
 bettingButton.classList.add('bettingButton');
 bettingButton.innerText = `Credit Bet: ${playerBet}`;
 buttonsContainer.appendChild(bettingButton);
+
 bettingButton.addEventListener('click', clickbettingbutton);
+
 dealButton = document.createElement('button');
 dealButton.classList.add('dealButton');
 dealButton.innerText = 'Deal';
 buttonsContainer.appendChild(dealButton);
+
 const displayPoint = document.createElement('div');
 displayPoint.classList.add('display-point');
 displayPoint.innerText = `Your total credit ${playerScore}`;
 buttonsContainer.appendChild(displayPoint);
+
+const helpButton = document.createElement('button');
+helpButton.classList.add('help-button');
+helpButton.innerText = 'HELP';
+
 dealButton.addEventListener('click', (event) => {
   DealingButtonClick(event.currentTarget);
 });
 document.body.appendChild(buttonsContainer);
 
+document.body.appendChild(helpButton);
+helpButton.addEventListener('click', clickingHelpButton);
 deck = shuffleCards(makeDeck());
 const initGame = () => {
   dealButton.disabled = true;
