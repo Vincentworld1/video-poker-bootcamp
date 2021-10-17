@@ -10,6 +10,7 @@ let playerBet = 0;
 let tempCardShow;
 
 // keep track if it first deal or second
+// 0 first deal ,1 discard and deal
 let counter = 0;
 
 // header container and  title
@@ -36,6 +37,12 @@ document.body.appendChild(playercards);
 
 let cardNameTally = {};
 let cardSuitTally = {};
+
+const showHoldContainer = document.createElement('div');
+showHoldContainer.classList.add('showholdcontainer');
+const showHold = document.createElement('div');
+showHold.classList.add('holdMsg');
+
 // winning rule
 // pair of jack =no decrease of credit
 const checkForPairofJack = () => {
@@ -213,7 +220,27 @@ const winningCondition = () => {
   displayPoint.innerText = `Your total credit ${playerScore}.\n ${outcomeMessage}`;
   resetGame();
 };
-
+//
+//
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+/// =====================================
+//
+//
+//
+//
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 const getRandomIndex = (max) => Math.floor(Math.random() * max);
 
@@ -257,16 +284,16 @@ const makeDeck = () => {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName === '1') {
         cardName = 'ace';
-        displayCardName = 'A';
+        displayCardName = 'ace';
       } else if (cardName === '11') {
         cardName = 'jack';
-        displayCardName = 'J';
+        displayCardName = 'jack';
       } else if (cardName === '12') {
         cardName = 'queen';
-        displayCardName = 'Q';
+        displayCardName = 'queen';
       } else if (cardName === '13') {
         cardName = 'king';
-        displayCardName = 'K';
+        displayCardName = 'king';
       }
       let cardSymbol = '';
       if (currentSuit == 'diamonds') {
@@ -309,10 +336,6 @@ const clickbettingbutton = () => {
   bettingButton.innerText = `Credit Bet: ${playerBet}`;
 };
 // show message 'hold' or 'discard' when click contrainer element
-const showHoldContainer = document.createElement('div');
-showHoldContainer.classList.add('showholdcontainer');
-const showHold = document.createElement('div');
-showHold.classList.add('holdMsg');
 
 const holdButtonClick = (holdButtonElement, j) => {
   console.log(holdButtonElement.innerText);
@@ -331,7 +354,35 @@ const holdButtonClick = (holdButtonElement, j) => {
   showHoldContainer.appendChild(showHold);
   holdButtonElement.appendChild(showHoldContainer);
 };
+//  let imgSrc = '';
+//   // get directory for each of the cards
+//   imgSrc = './PNG-cards/' + card.name + '_of_' + card.suit;
+//   if (card.rank >= 11 && card.rank <= 13) {
+//     imgSrc += '-' + card.name.toUpperCase();
+//   }
+//   imgSrc += '.png'
+//   // Returns the link to the image
+//   return imgSrc;
+const createCards = () => {
+  tempCardShow = deck.pop();
+  playerHandcards.push(tempCardShow);
+  const suit = document.createElement('div');
+  suit.classList.add('suit');
+  suit.innerText = tempCardShow.suitSymbol;
 
+  const name = document.createElement('div');
+  name.classList.add(tempCardShow.colour);
+  name.innerText = tempCardShow.displayName;
+
+  card = document.createElement('button');
+  card.classList.add('card');
+ const cardImg = document.createElement('img')
+      cardImg.src = `./cards/${tempCardShow.displayName}_of_${tempCardShow.suit}.png `
+     
+      card.appendChild(cardImg)
+     
+  playercards.appendChild(card);
+};
 const DealingButtonClick = () => {
   // if dedck have less then 5 card , make more cards
 
@@ -346,7 +397,9 @@ const DealingButtonClick = () => {
     counter += 1;
     playercards.innerText = '';
     for (let i = 0; i < 5; i += 1) {
+      console.log('test first deal')
       tempCardShow = deck.pop();
+      console.log(tempCardShow)
       storeCardsforFirstround.push(tempCardShow);
       cardButtonArray[i] = 'discard';
       const suit = document.createElement('div');
@@ -359,19 +412,23 @@ const DealingButtonClick = () => {
 
       card = document.createElement('button');
       card.classList.add('card');
-      card.appendChild(name);
-      card.appendChild(suit);
+      const cardImg = document.createElement('img')
+      cardImg.src = `./cards/${tempCardShow.displayName}_of_${tempCardShow.suit}.png `
+     
+      card.appendChild(cardImg)
+     
       showHold.innerText = 'hold';
       playercards.appendChild(card);
+
       card.addEventListener('click', (event) => {
         holdButtonClick(event.currentTarget, i);
       });
     }
   } else if (counter !== 0) {
+    console.log('deal 2nd')
     bettingButton.disabled = false;
     counter = 0;
     console.log(counter);
-    counter = 0;
     playercards.innerText = '';
     for (let i = 0; i < playerHandcards.length; i += 1) {
       const suit = document.createElement('div');
@@ -381,30 +438,21 @@ const DealingButtonClick = () => {
       const name = document.createElement('div');
       name.classList.add(tempCardShow.colour);
       name.innerText = playerHandcards[i].displayName;
-
+     
       card = document.createElement('button');
       card.classList.add('card');
-      card.appendChild(name);
-      card.appendChild(suit);
+      const cardImg = document.createElement('img')
+      cardImg.src = `./cards/${playerHandcards[i].displayName}_of_${playerHandcards[i].suit}.png `
+     
+      card.appendChild(cardImg)
+     
       playercards.appendChild(card);
+      
     }
     for (let J = 0; J < 5; J += 1) {
       if (cardButtonArray[J] === 'discard') {
-        tempCardShow = deck.pop();
-        playerHandcards.push(tempCardShow);
-        const suit = document.createElement('div');
-        suit.classList.add('suit');
-        suit.innerText = tempCardShow.suitSymbol;
-
-        const name = document.createElement('div');
-        name.classList.add(tempCardShow.colour);
-        name.innerText = tempCardShow.displayName;
-
-        card = document.createElement('button');
-        card.classList.add('card');
-        card.appendChild(name);
-        card.appendChild(suit);
-        playercards.appendChild(card);
+         
+        createCards();
       }
     }
     tallyCards();
